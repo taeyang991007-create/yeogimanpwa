@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#D85A30">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="여기에만">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>여기에만 - 동네 맛집 플랫폼</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet"/>
+<!--
+  ⚠️ 네이버 지도를 사용하려면 아래 주석을 해제하고 YOUR_NCP_CLIENT_ID를 교체하세요
+  네이버 클라우드 플랫폼(console.ncloud.com)에서 발급받은 Client ID를 입력합니다
+-->
+<!-- <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_NCP_CLIENT_ID"></script> -->
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+--bg:#F4F4F4;--white:#fff;
+--text:#191919;--text2:#6B7684;--text3:#A0A6B1;
+--border:rgba(0,0,0,0.08);
+--primary:#3182F6;--primary-light:#E8F3FF;--primary-dark:#1B64DA;
+--coral:#D85A30;--coral-light:#FFF0EB;--coral-dark:#993C1D;
+--amber:#FF9F0A;--amber-light:#FFF5E0;--amber-dark:#8B5800;
+--red:#F04452;--red-light:#FFEBEE;--red-dark:#C62828;
+--green:#00C48C;--green-light:#E5FAF3;--green-dark:#007A56;
+--naver:#03C75A;--naver-light:#E5F9ED;--naver-dark:#02A94B;
+--gray100:#F2F3F5;--gray200:#E5E8EB
+}
+body{font-family:'Pretendard Variable',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+#app{max-width:480px;margin:0 auto;min-height:100dvh;padding-bottom:76px;background:var(--bg)}
+.s{background:var(--white);margin-bottom:8px}.sp{padding:20px}
+.header{background:var(--white);padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.header-logo{font-size:20px;font-weight:700;color:var(--coral);letter-spacing:-.5px}
+.header-icon{width:32px;height:32px;border-radius:50%;background:var(--gray100);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.header-icon:active{background:var(--gray200)}
+.header-icon svg{width:16px;height:16px;color:var(--text2)}
+
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-top:.5px solid var(--border);display:flex;z-index:30;padding:4px 0 env(safe-area-inset-bottom,8px)}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 4px;border:none;background:none;cursor:pointer;font-family:inherit}
+.bnav button svg{width:22px;height:22px;color:var(--text3);transition:color .15s}
+.bnav button span{font-size:10px;color:var(--text3);font-weight:500}
+.bnav button.on svg{color:var(--text)}.bnav button.on span{color:var(--text);font-weight:600}
+
+.bn{font-size:32px;font-weight:700;letter-spacing:-1px}.bs{font-size:14px;color:var(--text2);margin-top:2px}
+.qs{display:flex}.qsi{flex:1;text-align:center;padding:16px 8px;position:relative}
+.qsi:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:.5px;background:var(--border)}
+.qn{font-size:22px;font-weight:700}.ql{font-size:12px;color:var(--text3);margin-top:4px}
+
+.cat-grid{display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px}
+.cat-grid::-webkit-scrollbar{display:none}
+.cat-item{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:64px;padding:8px 6px;cursor:pointer;border-radius:12px}
+.cat-item:active{background:var(--gray100)}
+.cat-item.on .cat-icon{border-color:var(--coral);background:var(--coral-light)}
+.cat-item.on .cat-name{color:var(--coral);font-weight:600}
+.cat-icon{width:44px;height:44px;border-radius:14px;background:var(--gray100);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .15s}
+.cat-name{font-size:11px;color:var(--text2);white-space:nowrap}
+
+.si{display:flex;align-items:center;padding:16px 20px;gap:14px;cursor:pointer;transition:background .15s;position:relative}
+.si:active{background:var(--gray100)}
+.si:not(:last-child)::after{content:'';position:absolute;bottom:0;left:20px;right:20px;height:.5px;background:var(--border)}
+.sr{font-size:16px;font-weight:700;min-width:24px;text-align:center;color:var(--text3)}.sr.t3{color:var(--coral)}
+.sa{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sif{flex:1;min-width:0}.sn{font-size:15px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:6px}
+.sm{font-size:13px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srt{text-align:right;flex-shrink:0}.sh{font-size:15px;font-weight:600;color:var(--coral)}
+.shl{font-size:11px;color:var(--text3);margin-top:2px}
+.tp{display:inline-flex;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
+.tpc{background:var(--gray100);color:var(--text3)}.tpo{background:var(--primary-light);color:var(--primary-dark)}
+.tph{background:var(--amber-light);color:var(--amber-dark)}.tpl{background:var(--red-light);color:var(--red-dark)}
+
+.hb{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--coral-light);border-radius:14px;cursor:pointer;transition:all .2s;border:none;width:100%;font-family:inherit}
+.hb:active{transform:scale(.97)}.hb.on{background:var(--coral);color:#fff}
+.hb svg{width:20px;height:20px}.hb em{font-size:15px;font-weight:600;font-style:normal}
+
+.pt{height:6px;background:var(--gray100);border-radius:3px;overflow:hidden;margin-top:12px}
+.ptf{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.25,.46,.45,.94)}
+.ptf-l{background:var(--text3)}.ptf-m{background:var(--primary)}.ptf-h{background:var(--coral)}.ptf-d{background:var(--green)}
+.ptt{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--text3)}
+
+.chip-r{display:flex;gap:6px;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+.chip-r::-webkit-scrollbar{display:none}
+.chip{padding:8px 16px;border-radius:20px;background:var(--white);border:.5px solid var(--border);font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap;font-weight:500}
+.chip.on{background:var(--text);color:var(--white);border-color:var(--text)}
+
+.dp{background:var(--white);padding:24px 20px 32px;position:relative}
+.db{position:absolute;top:20px;left:16px;width:36px;height:36px;border-radius:50%;background:var(--gray100);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.db:active{background:var(--gray200)}.db svg{width:18px;height:18px;color:var(--text)}
+.dn{font-size:22px;font-weight:700;letter-spacing:-.5px;text-align:center;margin-top:8px}
+.dm2{font-size:14px;color:var(--text3);text-align:center;margin-top:4px}
+.dd{font-size:14px;color:var(--text2);line-height:1.7;padding:16px 0;border-top:.5px solid var(--border);margin-top:16px}
+.dt{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.dtg{font-size:12px;padding:4px 10px;border-radius:8px;background:var(--gray100);color:var(--text2)}
+
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--text);color:var(--white);padding:12px 24px;border-radius:14px;font-size:14px;font-weight:500;z-index:100;opacity:0;transition:all .3s cubic-bezier(.25,.46,.45,.94);pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:48px 20px;color:var(--text3);font-size:15px;line-height:1.6}
+.nearby-badge{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green-dark);font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
+
+/* ===== 검색 오버레이 ===== */
+.search-overlay{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:var(--bg);z-index:50;overflow-y:auto;display:none}
+.search-overlay.open{display:block}
+.search-header{background:var(--white);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2;border-bottom:.5px solid var(--border)}
+.search-back{width:36px;height:36px;border-radius:50%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.search-back:active{background:var(--gray100)}
+.search-back svg{width:20px;height:20px;color:var(--text)}
+.search-input{flex:1;padding:10px 16px;border:.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:var(--gray100);color:var(--text);outline:none}
+.search-input:focus{border-color:var(--primary);background:var(--white)}
+.search-btn{width:36px;height:36px;border-radius:10px;background:var(--naver);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.search-btn:active{opacity:.8}
+.search-btn svg{width:18px;height:18px;color:#fff}
+
+.naver-badge{display:inline-flex;align-items:center;gap:4px;background:var(--naver-light);color:var(--naver-dark);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700}
+.nr{padding:16px 20px;background:var(--white);position:relative}
+.nr:active{background:var(--gray100)}
+.nr:not(:last-child){border-bottom:.5px solid var(--border)}
+.nr-top{display:flex;align-items:flex-start;gap:12px}
+.nr-thumb{width:56px;height:56px;border-radius:12px;background:var(--gray100);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.nr-info{flex:1;min-width:0}
+.nr-name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nr-cat{font-size:12px;color:var(--text3);margin-top:2px}
+.nr-addr{font-size:12px;color:var(--text3);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nr-tel{font-size:12px;color:var(--primary);margin-top:2px}
+.nr-actions{display:flex;gap:8px;margin-top:12px}
+.nr-btn{flex:1;padding:10px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.nr-btn:active{transform:scale(.97)}
+.nr-heart{background:var(--coral-light);color:var(--coral-dark)}
+.nr-heart.on{background:var(--coral);color:#fff}
+.nr-heart svg{width:16px;height:16px}
+.nr-naver{background:var(--naver-light);color:var(--naver-dark)}
+.nr-count{font-size:12px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:4px}
+.nr-count svg{width:14px;height:14px;color:var(--coral)}
+
+.section-title{padding:14px 20px 8px;font-size:13px;color:var(--text3);font-weight:500;background:var(--bg)}
+.search-loading{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+.loading-spinner{width:24px;height:24px;border:3px solid var(--gray200);border-top-color:var(--naver);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hot-keyword{display:inline-flex;padding:8px 16px;background:var(--white);border:.5px solid var(--border);border-radius:20px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit}
+.hot-keyword:active{background:var(--gray100)}
+.franchise-warn{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--red-light);border-radius:10px;margin:0 20px 8px;font-size:12px;color:var(--red-dark);line-height:1.4}
+
+/* 네이버 지도 컨테이너 */
+#naverMap{width:100%;height:380px;background:var(--gray100)}
+.map-fallback{width:100%;height:380px;background:var(--gray100);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);font-size:14px;gap:8px}
+.ml{display:flex;gap:16px;padding:12px 20px}
+.mli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.mld{width:8px;height:8px;border-radius:50%}
+
+.fg{margin-bottom:20px}
+.fl{font-size:13px;color:var(--text3);margin-bottom:8px;font-weight:500}
+.fi{width:100%;padding:14px 16px;border:.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:var(--gray100);color:var(--text);outline:none}
+.fi:focus{border-color:var(--primary);background:var(--white)}
+.fta{height:100px;resize:none}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.fsb{width:100%;padding:16px;border:none;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.fsb:active{transform:scale(.98);opacity:.9}
+.fw{background:var(--amber-light);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--amber-dark);line-height:1.5;margin-bottom:20px}
+.ic{padding:16px;background:var(--gray100);border-radius:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.ii{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.it{font-size:14px;font-weight:600}.id{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.4}
+.naver-link-row{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--naver-light);border-radius:12px;margin-top:12px;cursor:pointer}
+.naver-link-row:active{opacity:.8}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.af{animation:fadeUp .4s cubic-bezier(.25,.46,.45,.94) both}
+.ad1{animation-delay:.05s}.ad2{animation-delay:.1s}.ad3{animation-delay:.15s}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="search-overlay" id="searchOv"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== PWA 서비스 워커 등록 =====
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+// ===== 카테고리 =====
+const CATS=[
+{id:'all',name:'전체',emoji:'🍽'},{id:'한식',name:'한식',emoji:'🍚'},{id:'일식',name:'일식',emoji:'🍣'},
+{id:'양식',name:'양식',emoji:'🍝'},{id:'중식',name:'중식',emoji:'🥟'},{id:'고기',name:'고기',emoji:'🥩'},
+{id:'국밥',name:'국밥',emoji:'🍲'},{id:'디저트',name:'디저트',emoji:'🍰'}
+];
+const AREAS=['전체','한옥마을','효자동','덕진동','중화산동','평화동','송천동','객사길'];
+
+// ===== 네이버 카테고리 → 여기에만 카테고리 매핑 =====
+function mapCategory(naverCat) {
+  const c = (naverCat || '').toLowerCase();
+  if (c.includes('일식') || c.includes('초밥') || c.includes('라멘') || c.includes('돈까스')) return '일식';
+  if (c.includes('중식') || c.includes('중국')) return '중식';
+  if (c.includes('양식') || c.includes('이탈리') || c.includes('프랑스') || c.includes('파스타') || c.includes('피자') || c.includes('버거')) return '양식';
+  if (c.includes('고기') || c.includes('구이') || c.includes('갈비') || c.includes('삼겹') || c.includes('소고기') || c.includes('돼지') || c.includes('치킨') || c.includes('닭')) return '고기';
+  if (c.includes('국밥') || c.includes('탕') || c.includes('찌개') || c.includes('순대') || c.includes('설렁탕') || c.includes('해장')) return '국밥';
+  if (c.includes('카페') || c.includes('디저트') || c.includes('빵') || c.includes('케이크') || c.includes('커피') || c.includes('베이커리') || c.includes('아이스크림')) return '디저트';
+  if (c.includes('한식') || c.includes('한정식') || c.includes('비빔') || c.includes('분식')) return '한식';
+  return '한식';
+}
+function emoji(cat) { return CATS.find(x => x.id === cat)?.emoji || '🍽'; }
+
+// ===== 전주 좌표 =====
+const JEONJU_CENTER = { lat: 35.8242, lng: 127.1480 };
+
+// ===== 로컬 데이터 (LocalStorage로 영구 저장) =====
+function loadShops() {
+  try {
+    const d = localStorage.getItem('yeogiemanShops');
+    return d ? JSON.parse(d) : getDefaultShops();
+  } catch(e) { return getDefaultShops(); }
+}
+function saveShops() {
+  try { localStorage.setItem('yeogiemanShops', JSON.stringify(shops)); } catch(e) {}
+}
+function getDefaultShops() {
+  return [
+    {id:1,name:'할매국밥',area:'한옥마을',cat:'국밥',desc:'50년 전통 소머리국밥.',tags:['국밥','노포'],hearts:2847,h:false,addr:'전주시 완산구 전주천동로 94',lat:35.8131,lng:127.1528},
+    {id:2,name:'풍남문 칼국수',area:'한옥마을',cat:'한식',desc:'직접 반죽한 면발과 바지락 육수.',tags:['칼국수'],hearts:1523,h:false,addr:'전주시 완산구 풍남문3길 22',lat:35.8138,lng:127.1518},
+    {id:3,name:'진미집',area:'객사길',cat:'한식',desc:'전주 비빔밥의 원조.',tags:['비빔밥','전통'],hearts:4201,h:false,addr:'전주시 완산구 전동3가',lat:35.8162,lng:127.1488},
+    {id:4,name:'객사길 떡갈비',area:'객사길',cat:'고기',desc:'숯불에 직접 구운 떡갈비.',tags:['떡갈비'],hearts:312,h:false,addr:'전주시 완산구 객사3길',lat:35.8171,lng:127.1460},
+    {id:5,name:'효자 손만두',area:'효자동',cat:'한식',desc:'매일 아침 빚는 왕만두.',tags:['만두'],hearts:89,h:false,addr:'전주시 완산구 효자로',lat:35.8228,lng:127.1290},
+    {id:6,name:'미소라멘',area:'덕진동',cat:'일식',desc:'돈코츠 라멘 전문점.',tags:['라멘'],hearts:156,h:false,addr:'전주시 덕진구 덕진동1가',lat:35.8372,lng:127.1415},
+    {id:7,name:'화평동 짜장',area:'중화산동',cat:'중식',desc:'옛날식 짜장면.',tags:['짜장면'],hearts:73,h:false,addr:'전주시 완산구 중화산동',lat:35.8189,lng:127.1352},
+    {id:8,name:'송천 파스타공방',area:'송천동',cat:'양식',desc:'생면 파스타와 화덕 피자.',tags:['파스타'],hearts:45,h:false,addr:'전주시 덕진구 송천동',lat:35.8440,lng:127.1185},
+    {id:9,name:'평화다방',area:'평화동',cat:'디저트',desc:'쌍화차와 달고나 커피.',tags:['다방'],hearts:198,h:false,addr:'전주시 완산구 평화동',lat:35.8248,lng:127.1620},
+    {id:10,name:'덕진공원 붕어빵',area:'덕진동',cat:'디저트',desc:'겨울 한정 팥붕어빵.',tags:['붕어빵'],hearts:67,h:false,addr:'전주시 덕진구 덕진동',lat:35.8395,lng:127.1432},
+    {id:11,name:'한옥마을 왕갈비',area:'한옥마을',cat:'고기',desc:'양념 왕갈비와 생갈비.',tags:['갈비'],hearts:987,h:false,addr:'전주시 완산구 교동',lat:35.8155,lng:127.1545},
+    {id:12,name:'덕진 순대국',area:'덕진동',cat:'국밥',desc:'순대와 머리고기 순대국밥.',tags:['순대국'],hearts:234,h:false,addr:'전주시 덕진구 덕진동2가',lat:35.8360,lng:127.1398},
+  ];
+}
+let shops = loadShops();
+
+// ===== 상태 =====
+let S = { tab:'home', detail:null, cat:'all', oArea:'전체', oCat:'all',
+  form:{name:'',area:'한옥마을',cat:'한식',desc:'',tags:''},
+  searchOpen:false, searchQ:'', searchResults:[], searchLoading:false };
+
+// ===== 유틸 =====
+function tier(h){if(h>=10000)return{l:'전설',c:'tpl',bg:'var(--red-light)'};if(h>=1000)return{l:'인기',c:'tph',bg:'var(--amber-light)'};if(h>=100)return{l:'정식',c:'tpo',bg:'var(--primary-light)'};return{l:'후보',c:'tpc',bg:'var(--gray100)'};}
+function prog(h){if(h>=10000)return{p:100,c:'ptf-d',t:'전설 달성!'};if(h>=1000)return{p:Math.round(h/10000*100),c:'ptf-h',t:(10000-h).toLocaleString()+'개 남음'};if(h>=100)return{p:Math.round(h/1000*100),c:'ptf-m',t:(1000-h).toLocaleString()+'개 남음'};return{p:Math.round(h/100*100),c:'ptf-l',t:(100-h)+'개 남음'};}
+function distKm(lat,lng){const d=Math.sqrt(Math.pow((lat-JEONJU_CENTER.lat)*111,2)+Math.pow((lng-JEONJU_CENTER.lng)*88,2));return d<1?Math.round(d*1000)+'m':d.toFixed(1)+'km';}
+function distNum(s){return Math.sqrt(Math.pow(((s.lat||35.82)-JEONJU_CENTER.lat)*111,2)+Math.pow(((s.lng||127.14)-JEONJU_CENTER.lng)*88,2));}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function toggleH(id,e){if(e)e.stopPropagation();const s=shops.find(x=>x.id===id);if(!s)return;s.h=!s.h;s.hearts+=s.h?1:-1;if(s.h&&s.hearts===100)toast(s.name+' 정식 등록 축하! 🎉');else if(s.h)toast(s.name+'에 하트를 보냈어요');saveShops();render();if(S.searchOpen)renderSearch();}
+const SVG_HEART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+const SVG_HEART_FILL='<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+
+// ===========================
+// 네이버 플레이스 실제 검색
+// ===========================
+async function doSearch(q) {
+  S.searchQ = q;
+  if (!q.trim()) { S.searchResults = []; S.searchLoading = false; renderSearch(); return; }
+
+  S.searchLoading = true;
+  renderSearch();
+
+  try {
+    // /api/search 엔드포인트 호출 (Vercel 서버리스 함수)
+    const res = await fetch('/api/search?query=' + encodeURIComponent('전주 ' + q) + '&display=10');
+    const data = await res.json();
+
+    if (data.error) {
+      toast('API 오류: ' + data.error);
+      S.searchResults = [];
+    } else {
+      S.searchResults = (data.items || []).map(item => ({
+        name: item.name,
+        cat: mapCategory(item.category),
+        catRaw: item.category,
+        addr: item.address,
+        tel: item.telephone,
+        link: item.link,
+        desc: item.description,
+        franchise: item.franchise,
+        mapx: item.mapx,
+        mapy: item.mapy,
+      }));
+    }
+  } catch (err) {
+    toast('검색 실패 — API 연결을 확인해주세요');
+    S.searchResults = [];
+  }
+  S.searchLoading = false;
+  renderSearch();
+}
+
+// 네이버 검색 결과를 여기에만에 등록
+function importFromNaver(idx) {
+  const n = S.searchResults[idx];
+  if (!n) return;
+  if (n.franchise) { toast('프랜차이즈는 등록할 수 없어요'); return; }
+  if (shops.find(s => s.name === n.name && s.addr === n.addr)) { toast('이미 등록된 맛집이에요'); return; }
+
+  // 네이버 좌표 변환 (카텍 → 위경도 근사)
+  let lat = 35.82, lng = 127.14;
+  if (n.mapx && n.mapy) {
+    // 네이버 로컬 API 좌표는 카텍(KATEC) 좌표계
+    lng = Number(n.mapx) / 10000000;
+    lat = Number(n.mapy) / 10000000;
+    // 근사값이 이상하면 전주 중심으로 폴백
+    if (lat < 35 || lat > 36.5 || lng < 126 || lng > 128) { lat = 35.82; lng = 127.14; }
+  }
+
+  shops.push({
+    id: Date.now(),
+    name: n.name,
+    area: guessArea(lat, lng),
+    cat: n.cat,
+    desc: n.desc || n.catRaw || '',
+    tags: n.catRaw ? n.catRaw.split('>').map(t => t.trim()).filter(Boolean).slice(-2) : [],
+    hearts: 0,
+    h: false,
+    addr: n.addr,
+    tel: n.tel,
+    link: n.link,
+    lat, lng,
+  });
+  saveShops();
+  toast(n.name + ' 등록 완료!');
+  renderSearch();
+  render();
+}
+
+function guessArea(lat, lng) {
+  const areas = [
+    {name:'한옥마을',lat:35.8150,lng:127.1530},
+    {name:'효자동',lat:35.8230,lng:127.1290},
+    {name:'덕진동',lat:35.8380,lng:127.1420},
+    {name:'중화산동',lat:35.8190,lng:127.1350},
+    {name:'평화동',lat:35.8250,lng:127.1620},
+    {name:'송천동',lat:35.8450,lng:127.1180},
+    {name:'객사길',lat:35.8170,lng:127.1470},
+  ];
+  let min = Infinity, best = '전주';
+  areas.forEach(a => {
+    const d = Math.pow(lat - a.lat, 2) + Math.pow(lng - a.lng, 2);
+    if (d < min) { min = d; best = a.name; }
+  });
+  return best;
+}
+
+// ===== 검색 UI 렌더링 =====
+function renderSearch() {
+  const ov = document.getElementById('searchOv');
+  if (!S.searchOpen) { ov.classList.remove('open'); return; }
+  ov.classList.add('open');
+  const q = S.searchQ;
+  const results = S.searchResults;
+  const hotKw = ['비빔밥','국밥','떡갈비','라멘','파스타','디저트','고기','한옥마을 맛집'];
+
+  let h = '<div class="search-header">' +
+    '<button class="search-back" onclick="S.searchOpen=false;renderSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>' +
+    '<input class="search-input" id="si" type="text" placeholder="전주 맛집 이름이나 메뉴 검색" value="' + q + '" onkeydown="if(event.key===\'Enter\')doSearch(this.value)"/>' +
+    '<button class="search-btn" onclick="doSearch(document.getElementById(\'si\').value)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button></div>';
+
+  if (!q.trim() && !S.searchLoading) {
+    h += '<div class="section-title">인기 검색어</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 20px">' +
+      hotKw.map(k => '<button class="hot-keyword" onclick="document.getElementById(\'si\').value=\'' + k + '\';doSearch(\'' + k + '\')">' + k + '</button>').join('') + '</div>' +
+      '<div class="section-title" style="margin-top:8px">검색 팁</div>' +
+      '<div style="padding:8px 20px;font-size:14px;color:var(--text2);line-height:1.8">' +
+      '네이버 플레이스에 등록된 전주 맛집을<br>실시간으로 검색하고 바로 등록할 수 있어요.<br><br>' +
+      '"콩나물국밥" — 메뉴 이름<br>"한옥마을 고기" — 지역 + 카테고리<br>"가게이름" — 가게 이름 직접 검색</div>';
+  } else if (S.searchLoading) {
+    h += '<div class="search-loading"><div class="loading-spinner"></div>네이버 플레이스에서 검색 중...</div>';
+  } else if (!results.length) {
+    h += '<div style="text-align:center;padding:60px 20px;color:var(--text3)"><div style="font-size:48px;margin-bottom:12px;opacity:.4">🔍</div><div style="font-size:15px;line-height:1.6">"' + q + '" 검색 결과가 없어요<br>다른 키워드로 검색해보세요</div></div>';
+  } else {
+    const nr = results.filter(r => !r.franchise);
+    const fr = results.filter(r => r.franchise);
+
+    if (nr.length) {
+      h += '<div class="section-title">네이버 플레이스 검색 결과 (' + nr.length + ')</div>';
+      nr.forEach((n, i) => {
+        const ex = shops.find(s => s.name === n.name);
+        const t = ex ? tier(ex.hearts) : null;
+        h += '<div class="nr"><div class="nr-top">' +
+          '<div class="nr-thumb">' + emoji(n.cat) + '</div>' +
+          '<div class="nr-info"><div class="nr-name">' + n.name + ' <span class="naver-badge">N 플레이스</span>' +
+          (ex ? '<span class="tp ' + t.c + '">' + t.l + '</span>' : '') + '</div>' +
+          '<div class="nr-cat">' + (n.catRaw || n.cat) + '</div>' +
+          '<div class="nr-addr">' + n.addr + '</div>' +
+          (n.tel ? '<div class="nr-tel">' + n.tel + '</div>' : '') +
+          (ex ? '<div class="nr-count">' + SVG_HEART_FILL.replace('width="20"','').slice(0,-6) + ' ' + ex.hearts.toLocaleString() + ' 하트' + (ex.hearts >= 100 ? ' · 정식 등록됨' : '') + '</div>' : '') +
+          '</div></div>' +
+          '<div class="nr-actions">' +
+          (ex
+            ? '<button class="nr-btn nr-heart' + (ex.h ? ' on' : '') + '" onclick="toggleH(' + ex.id + ',event)">' +
+              (ex.h ? SVG_HEART_FILL : SVG_HEART).replace(/width="20"|height="20"/g,'') +
+              (ex.h ? '보냈어요' : '하트 보내기') + '</button>'
+            : '<button class="nr-btn nr-heart" onclick="importFromNaver(' + results.indexOf(n) + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>여기에만에 등록</button>'
+          ) +
+          (n.link ? '<a class="nr-btn nr-naver" href="' + n.link + '" target="_blank" style="text-decoration:none">N 상세보기</a>' : '<button class="nr-btn nr-naver" onclick="toast(\'네이버 플레이스 링크 없음\')">N</button>') +
+          '</div></div>';
+      });
+    }
+    if (fr.length) {
+      h += '<div class="section-title">프랜차이즈 (등록 불가)</div>' +
+        '<div class="franchise-warn">프랜차이즈 업체는 여기에만에 등록할 수 없어요</div>';
+      fr.forEach(n => {
+        h += '<div class="nr" style="opacity:.55"><div class="nr-top">' +
+          '<div class="nr-thumb" style="background:var(--gray200)">' + emoji(n.cat) + '</div>' +
+          '<div class="nr-info"><div class="nr-name" style="color:var(--text3)">' + n.name + ' <span style="font-size:11px;color:var(--red);font-weight:600">프랜차이즈</span></div>' +
+          '<div class="nr-cat">' + (n.catRaw || '') + '</div></div></div></div>';
+      });
+    }
+  }
+  ov.innerHTML = h;
+  if (S.searchOpen && !S.searchLoading) setTimeout(() => {
+    const inp = document.getElementById('si');
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }, 50);
+}
+
+// ===== 리스트 아이템 =====
+function shopRow(s, rank, sd) {
+  const t = tier(s.hearts);
+  return '<div class="si' + (rank ? ' af ad' + Math.min(rank, 5) : '') + '" onclick="S.detail=' + s.id + ';render()">' +
+    (rank ? '<span class="sr' + (rank <= 3 ? ' t3' : '') + '">' + rank + '</span>' : '') +
+    '<div class="sa" style="background:' + t.bg + '">' + emoji(s.cat) + '</div>' +
+    '<div class="sif"><div class="sn">' + s.name + '<span class="tp ' + t.c + '">' + t.l + '</span></div>' +
+    '<div class="sm">' + s.area + ' · ' + s.cat + (sd && s.lat ? ' · ' + distKm(s.lat, s.lng) : '') + (s.hearts < 100 ? ' · 정식까지 ' + (100 - s.hearts) + '개' : '') + '</div></div>' +
+    '<div class="srt"><div class="sh">' + s.hearts.toLocaleString() + '</div><div class="shl">하트</div></div></div>';
+}
+
+// ===== 상세 =====
+function renderDetail() {
+  const s = shops.find(x => x.id === S.detail); if (!s) return '';
+  const t = tier(s.hearts), p = prog(s.hearts);
+  return '<div class="dp">' +
+    '<button class="db" onclick="S.detail=null;render()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>' +
+    '<div style="text-align:center;padding-top:4px"><div class="sa" style="background:' + t.bg + ';width:56px;height:56px;border-radius:16px;margin:0 auto;font-size:28px">' + emoji(s.cat) + '</div>' +
+    '<div class="dn">' + s.name + '</div><div class="dm2">' + s.area + ' · ' + s.cat + (s.lat ? ' · ' + distKm(s.lat, s.lng) : '') + '</div>' +
+    '<div style="margin-top:10px"><span class="tp ' + t.c + '" style="font-size:12px;padding:4px 12px">' + t.l + '</span></div></div>' +
+    '<div style="display:flex;margin-top:16px;background:var(--gray100);border-radius:14px;overflow:hidden">' +
+    '<div style="flex:1;text-align:center;padding:16px 8px"><div style="font-size:24px;font-weight:700;color:var(--coral)">' + s.hearts.toLocaleString() + '</div><div style="font-size:12px;color:var(--text3);margin-top:2px">하트</div></div>' +
+    '<div style="flex:1;text-align:center;padding:16px 8px;border-left:.5px solid var(--border)"><div style="font-size:24px;font-weight:700">' + (s.lat ? distKm(s.lat, s.lng) : '-') + '</div><div style="font-size:12px;color:var(--text3);margin-top:2px">거리</div></div></div>' +
+    '<div class="pt"><div class="ptf ' + p.c + '" style="width:' + p.p + '%"></div></div>' +
+    '<div class="ptt"><span>다음 등급까지</span><span>' + p.t + '</span></div>' +
+    '<div style="margin-top:16px"><button class="hb' + (s.h ? ' on' : '') + '" onclick="toggleH(' + s.id + ')">' +
+    (s.h ? SVG_HEART_FILL : SVG_HEART) + '<em style="color:' + (s.h ? '#fff' : 'var(--coral)') + '">' + (s.h ? '하트를 보냈어요' : '이 맛집에 하트 보내기') + '</em></button></div>' +
+    '<div class="dd">' + (s.desc || '') + '</div>' +
+    (s.addr ? '<div style="font-size:13px;color:var(--text3);margin-bottom:4px">📍 ' + s.addr + '</div>' : '') +
+    (s.tel ? '<div style="font-size:13px;color:var(--primary);margin-bottom:8px">📞 ' + s.tel + '</div>' : '') +
+    '<div class="dt">' + (s.tags || []).map(t => '<span class="dtg">#' + t + '</span>').join('') + '</div>' +
+    (s.link ? '<a class="naver-link-row" href="' + s.link + '" target="_blank" style="text-decoration:none"><span class="naver-badge" style="font-size:12px;padding:4px 8px">N</span><span style="font-size:13px;font-weight:600;flex:1;color:var(--naver-dark)">네이버 플레이스에서 보기</span><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" style="width:16px;height:16px"><path d="M9 18l6-6-6-6"/></svg></a>' : '') +
+    '</div>';
+}
+
+// ===== 네이버 지도 초기화 =====
+function initNaverMap(containerId, shopList) {
+  if (typeof naver === 'undefined' || !naver.maps) {
+    document.getElementById(containerId).innerHTML =
+      '<div class="map-fallback"><div style="font-size:32px">🗺</div>' +
+      '<div>네이버 지도 API 키를 설정하면<br>실제 지도가 표시됩니다</div>' +
+      '<div style="font-size:12px;margin-top:8px;color:var(--primary)">배포가이드.md 참고</div></div>';
+    return;
+  }
+
+  const map = new naver.maps.Map(containerId, {
+    center: new naver.maps.LatLng(JEONJU_CENTER.lat, JEONJU_CENTER.lng),
+    zoom: 13,
+    mapTypeControl: false,
+    scaleControl: false,
+  });
+
+  // 내 위치 마커
+  new naver.maps.Marker({
+    position: new naver.maps.LatLng(JEONJU_CENTER.lat, JEONJU_CENTER.lng),
+    map,
+    icon: { content: '<div style="width:16px;height:16px;background:#3182F6;border:3px solid #fff;border-radius:50%;box-shadow:0 0 6px rgba(49,130,246,.4)"></div>', anchor: new naver.maps.Point(8, 8) },
+  });
+
+  // 맛집 마커
+  shopList.forEach(s => {
+    if (!s.lat || !s.lng) return;
+    const color = s.hearts >= 10000 ? '#F04452' : s.hearts >= 1000 ? '#FF9F0A' : s.hearts >= 100 ? '#3182F6' : '#B4B2A9';
+    const size = s.hearts >= 1000 ? 14 : s.hearts >= 100 ? 12 : 10;
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(s.lat, s.lng),
+      map,
+      icon: { content: '<div style="width:' + size + 'px;height:' + size + 'px;background:' + color + ';border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>', anchor: new naver.maps.Point(size / 2, size / 2) },
+    });
+    const infoW = new naver.maps.InfoWindow({
+      content: '<div style="padding:12px 16px;font-family:Pretendard Variable,sans-serif;min-width:160px">' +
+        '<div style="font-weight:600;font-size:14px">' + s.name + '</div>' +
+        '<div style="font-size:12px;color:#6B7684;margin-top:2px">' + s.area + ' · ' + s.cat + '</div>' +
+        '<div style="font-size:13px;color:#D85A30;font-weight:600;margin-top:4px">' + s.hearts.toLocaleString() + ' 하트</div></div>',
+      borderWidth: 0,
+      backgroundColor: '#fff',
+      anchorSize: { width: 8, height: 8 },
+    });
+    naver.maps.Event.addListener(marker, 'click', () => {
+      if (infoW.getMap()) infoW.close();
+      else infoW.open(map, marker);
+    });
+  });
+}
+
+// ===== 탭 렌더링 =====
+function fc(list) { return S.cat === 'all' ? list : list.filter(s => s.cat === S.cat); }
+
+function renderHome() {
+  const filtered = fc(shops), off = shops.filter(s => s.hearts >= 100);
+  const nearby = filtered.filter(s => s.hearts >= 100).sort((a, b) => distNum(a) - distNum(b)).slice(0, 5);
+  const hot = filtered.filter(s => s.hearts >= 100).sort((a, b) => b.hearts - a.hearts).slice(0, 3);
+  const cand = filtered.filter(s => s.hearts < 100).sort((a, b) => b.hearts - a.hearts);
+  const total = shops.reduce((a, b) => a + b.hearts, 0);
+
+  return '<div class="s"><div class="sp">' +
+    '<div style="display:flex;align-items:center;gap:4px;font-size:13px;color:var(--text2);margin-bottom:8px">📍 전주 덕진동</div>' +
+    '<div class="bn">' + total.toLocaleString() + ' <span style="font-size:16px;font-weight:500;color:var(--text2)">하트</span></div>' +
+    '<div class="bs">하트 100개 이상이면 정식 등록돼요</div></div>' +
+    '<div class="qs"><div class="qsi"><div class="qn">' + shops.length + '</div><div class="ql">전체</div></div>' +
+    '<div class="qsi"><div class="qn" style="color:var(--primary)">' + off.length + '</div><div class="ql">정식 등록</div></div>' +
+    '<div class="qsi"><div class="qn" style="color:var(--coral)">' + (shops.length - off.length) + '</div><div class="ql">도전 중</div></div></div></div>' +
+    '<div class="s" style="padding:16px 0 8px"><div class="cat-grid">' + CATS.map(c => '<div class="cat-item' + (S.cat === c.id ? ' on' : '') + '" onclick="S.cat=\'' + c.id + '\';render()"><div class="cat-icon">' + c.emoji + '</div><div class="cat-name">' + c.name + '</div></div>').join('') + '</div></div>' +
+    (nearby.length ? '<div class="s"><div class="sp" style="padding-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span class="nearby-badge">📍 내 주변</span><span style="font-size:15px;font-weight:600">가까운 핫플</span></div></div>' + nearby.map((s, i) => shopRow(s, i + 1, true)).join('') + '</div>' : '') +
+    (hot.length ? '<div class="s"><div class="sp" style="padding-bottom:4px"><div style="font-size:15px;font-weight:600">🔥 지금 가장 핫한 맛집</div></div>' + hot.map((s, i) => shopRow(s, i + 1, false)).join('') + '</div>' : '') +
+    (cand.length ? '<div class="s"><div class="sp" style="padding-bottom:4px"><div style="font-size:15px;font-weight:600">도전 중인 맛집</div></div>' + cand.map(s => shopRow(s, 0, true)).join('') + '</div>' : '');
+}
+
+function renderMap() {
+  let list = fc([...shops]);
+  return '<div class="s" style="padding:12px 0 8px"><div class="cat-grid">' + CATS.map(c => '<div class="cat-item' + (S.cat === c.id ? ' on' : '') + '" onclick="S.cat=\'' + c.id + '\';render()"><div class="cat-icon">' + c.emoji + '</div><div class="cat-name">' + c.name + '</div></div>').join('') + '</div></div>' +
+    '<div class="s" style="margin-bottom:0"><div id="naverMap"></div>' +
+    '<div class="ml"><div class="mli"><div class="mld" style="background:var(--primary)"></div>내 위치</div><div class="mli"><div class="mld" style="background:#B4B2A9"></div>후보</div><div class="mli"><div class="mld" style="background:#3182F6"></div>정식</div><div class="mli"><div class="mld" style="background:#FF9F0A"></div>인기</div><div class="mli"><div class="mld" style="background:#F04452"></div>전설</div></div></div>';
+}
+
+function renderOfficial() {
+  const off = shops.filter(s => s.hearts >= 100); let list = [...off];
+  if (S.oArea !== '전체') list = list.filter(s => s.area === S.oArea);
+  if (S.oCat !== 'all') list = list.filter(s => s.cat === S.oCat);
+  list.sort((a, b) => b.hearts - a.hearts);
+  return '<div class="s"><div class="sp"><div style="font-size:14px;color:var(--text3)">정식 등록 맛집</div>' +
+    '<div class="bn" style="margin-top:4px">' + off.length + '<span style="font-size:16px;font-weight:500;color:var(--text2)"> 곳</span></div>' +
+    '<div class="bs">하트 100개 이상 검증된 맛집</div></div></div>' +
+    '<div class="s" style="padding:12px 0"><div class="chip-r" style="margin-bottom:8px">' + AREAS.map(a => '<button class="chip' + (S.oArea === a ? ' on' : '') + '" onclick="S.oArea=\'' + a + '\';render()">' + a + '</button>').join('') + '</div>' +
+    '<div class="cat-grid" style="padding:0 16px">' + CATS.map(c => '<div class="cat-item' + (S.oCat === c.id ? ' on' : '') + '" onclick="S.oCat=\'' + c.id + '\';render()"><div class="cat-icon">' + c.emoji + '</div><div class="cat-name">' + c.name + '</div></div>').join('') + '</div></div>' +
+    (list.length ? '<div class="s">' + list.map((s, i) => shopRow(s, i + 1, true)).join('') + '</div>' : '<div class="s"><div class="empty">해당 조건의 정식 맛집이 없어요</div></div>');
+}
+
+function renderRegister() {
+  const f = S.form, co = CATS.filter(c => c.id !== 'all');
+  return '<div class="s"><div class="sp"><div style="font-size:14px;color:var(--text3)">맛집 등록</div><div class="bn" style="font-size:24px;margin-top:4px">맛집 후보 등록하기</div><div class="bs">네이버 플레이스 검색 또는 직접 등록</div></div></div>' +
+    '<div class="s"><div class="sp" style="padding-bottom:12px">' +
+    '<div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--naver-light);border-radius:14px;cursor:pointer;margin-bottom:16px" onclick="S.searchOpen=true;renderSearch()">' +
+    '<span class="naver-badge" style="font-size:13px;padding:5px 10px">N</span><div style="flex:1"><div style="font-size:15px;font-weight:600;color:var(--naver-dark)">네이버 플레이스에서 검색</div><div style="font-size:12px;color:var(--green-dark);margin-top:2px;opacity:.7">실시간으로 검색하고 바로 등록할 수 있어요</div></div>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="var(--naver-dark)" stroke-width="2" style="width:18px;height:18px"><path d="M9 18l6-6-6-6"/></svg></div>' +
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px"><div style="flex:1;height:.5px;background:var(--border)"></div><span style="font-size:12px;color:var(--text3)">또는 직접 등록</span><div style="flex:1;height:.5px;background:var(--border)"></div></div>' +
+    '<div class="fg"><div class="fl">가게 이름</div><input class="fi" value="' + f.name + '" placeholder="예: 할매국밥" oninput="S.form.name=this.value"/></div>' +
+    '<div style="display:flex;gap:10px"><div class="fg" style="flex:1"><div class="fl">지역</div><select class="fi fsel" onchange="S.form.area=this.value">' + AREAS.filter(a => a !== '전체').map(a => '<option' + (f.area === a ? ' selected' : '') + '>' + a + '</option>').join('') + '</select></div>' +
+    '<div class="fg" style="flex:1"><div class="fl">카테고리</div><select class="fi fsel" onchange="S.form.cat=this.value">' + co.map(c => '<option value="' + c.id + '"' + (f.cat === c.id ? ' selected' : '') + '>' + c.emoji + ' ' + c.name + '</option>').join('') + '</select></div></div>' +
+    '<div class="fg"><div class="fl">소개글</div><textarea class="fi fta" placeholder="이 맛집만의 특별한 점" oninput="S.form.desc=this.value">' + f.desc + '</textarea></div>' +
+    '<div class="fw">프랜차이즈 업체는 등록할 수 없어요.</div>' +
+    '<button class="fsb" onclick="submitForm()">등록하기</button></div></div>';
+}
+
+function renderInfo() {
+  return '<div class="s"><div class="sp"><div style="font-size:14px;color:var(--text3)">안내</div><div class="bn" style="font-size:24px;margin-top:4px">하트 시스템</div><div class="bs">사용자들의 하트로 맛집이 만들어져요</div></div></div>' +
+    '<div class="s"><div class="sp">' +
+    '<div class="ic"><div class="ii" style="background:var(--gray100)">·</div><div><div class="it">후보 (0~99)</div><div class="id">하트를 모아주세요</div></div></div>' +
+    '<div class="ic"><div class="ii" style="background:var(--primary-light)">✓</div><div><div class="it" style="color:var(--primary-dark)">정식 등록 (100+)</div><div class="id">공식 맛집으로 등록</div></div></div>' +
+    '<div class="ic"><div class="ii" style="background:var(--amber-light)">♥</div><div><div class="it" style="color:var(--amber-dark)">인기 맛집 (1,000+)</div><div class="id">메인에 추천 노출</div></div></div>' +
+    '<div class="ic"><div class="ii" style="background:var(--red-light)">♛</div><div><div class="it" style="color:var(--red-dark)">전설 맛집 (10,000+)</div><div class="id">명예의 전당!</div></div></div>' +
+    '</div></div>';
+}
+
+function submitForm() {
+  const f = S.form;
+  if (!f.name.trim()) { toast('가게 이름을 입력해주세요'); return; }
+  if (!f.desc.trim()) { toast('소개글을 입력해주세요'); return; }
+  shops.push({ id: Date.now(), name: f.name.trim(), area: f.area, cat: f.cat, desc: f.desc.trim(), tags: [], hearts: 0, h: false, lat: JEONJU_CENTER.lat, lng: JEONJU_CENTER.lng });
+  const nm = f.name;
+  S.form = { name: '', area: '한옥마을', cat: '한식', desc: '', tags: '' };
+  S.tab = 'home'; saveShops(); toast(nm + ' 후보로 등록했어요'); render();
+}
+
+// ===== 메인 렌더 =====
+function render() {
+  if (S.detail) { document.getElementById('app').innerHTML = renderDetail(); return; }
+  const tabs = [
+    { id: 'home', icon: '<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>', l: '홈' },
+    { id: 'map', icon: '<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>', l: '지도' },
+    { id: 'official', icon: '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>', l: '정식 맛집' },
+    { id: 'register', icon: '<path d="M12 4v16m8-8H4"/>', l: '등록' },
+    { id: 'info', icon: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/>', l: '안내' },
+  ];
+  let c = '';
+  if (S.tab === 'home') c = renderHome();
+  else if (S.tab === 'map') c = renderMap();
+  else if (S.tab === 'official') c = renderOfficial();
+  else if (S.tab === 'register') c = renderRegister();
+  else if (S.tab === 'info') c = renderInfo();
+
+  document.getElementById('app').innerHTML =
+    '<div class="header"><div class="header-logo">여기에만</div>' +
+    '<div class="header-icon" onclick="S.searchOpen=true;renderSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div></div>' +
+    c +
+    '<nav class="bnav">' + tabs.map(t =>
+      '<button class="' + (S.tab === t.id ? 'on' : '') + '" onclick="S.tab=\'' + t.id + '\';render()">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + t.icon + '</svg>' +
+      '<span>' + t.l + '</span></button>'
+    ).join('') + '</nav>';
+
+  // 지도 탭이면 네이버 지도 초기화
+  if (S.tab === 'map') {
+    setTimeout(() => initNaverMap('naverMap', fc([...shops])), 100);
+  }
+}
+
+render();
+</script>
+</body>
+</html>

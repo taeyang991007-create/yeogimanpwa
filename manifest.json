@@ -1,0 +1,14 @@
+{
+  "name": "여기에만 - 동네 맛집 플랫폼",
+  "short_name": "여기에만",
+  "description": "프랜차이즈 NO! 우리 동네 진짜 맛집만 모은 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F4F4",
+  "theme_color": "#D85A30",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
